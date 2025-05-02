@@ -4,6 +4,9 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type application struct {
@@ -14,16 +17,24 @@ type config struct {
 	addr string
 }
 
-func (app *application) mount() *http.ServeMux {
+func (app *application) mount() *chi.Mux {
 
-	mux := http.NewServeMux()
+	r := chi.NewRouter()
 
-	mux.HandleFunc("GET /v1/health", app.healthCheckHandler)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Timeout(60 * time.Second))
 
-	return mux
+	r.Route("/v1", func(r chi.Router) {
+		r.Get("/health", app.healthCheckHandler)
+	})
+
+	return r
 }
 
-func (app *application) run(mux *http.ServeMux) error {
+func (app *application) run(mux *chi.Mux) error {
 
 	// Start the server
 	srv := &http.Server{
