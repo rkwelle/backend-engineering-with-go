@@ -9,4 +9,5 @@ func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Reques
 	// Write a simple JSON response
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"status":"ok"}`))
+
 }
