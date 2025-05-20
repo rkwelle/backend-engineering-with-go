@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -97,7 +98,7 @@ func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	post.Comments = comments
 
-	if err := app.jsonResponse(w, http.StatusCreated, post); err != nil {
+	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {
 		// writeJSONError(w, http.StatusInternalServerError, err.Error())
 		app.internalServerError(w, r, err)
 		return
@@ -158,6 +159,11 @@ func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := app.store.Posts.Update(r.Context(), post); err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			app.conflictResponse(w, r, fmt.Errorf("post was updated by another process"))
+			return
+		}
+
 		app.internalServerError(w, r, err)
 		return
 	}
