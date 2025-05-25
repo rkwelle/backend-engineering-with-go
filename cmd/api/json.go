@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -26,7 +27,12 @@ func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 
-	return decoder.Decode(data)
+	err := decoder.Decode(data)
+	if err != nil {
+		// You could detect certain JSON errors and wrap them here if desired
+		return fmt.Errorf("invalid JSON payload: %w", err)
+	}
+	return nil
 }
 
 func writeJSONError(w http.ResponseWriter, status int, message string) error {
