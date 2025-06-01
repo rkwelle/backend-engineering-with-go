@@ -10,6 +10,24 @@ import (
 
 const version = "1.0.0"
 
+//	@title			Gopher Social App API
+//	@description	This is a simple social app API built with Go.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@example.com
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@BasePath					/v1
+//
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						Authorization
+//	@description				API Key for authentication
+
 func main() {
 	cfg := config{
 		addr: env.GetString("ADDR", ":8080"),
